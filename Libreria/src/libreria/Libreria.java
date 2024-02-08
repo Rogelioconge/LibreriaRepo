@@ -15,6 +15,15 @@ public class Libreria {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+            Interfaz principal=new Interfaz();
+            
+            
+        principal.setLocationRelativeTo(null);
+        principal.setTitle("Menu");
+        principal.setVisible(true);
+            
+            
     }
     
 }
