@@ -45,9 +45,19 @@ public class Interfaz extends javax.swing.JFrame {
 
         btn_modificar.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_modificar.setText("Modificar");
+        btn_modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_modificarActionPerformed(evt);
+            }
+        });
 
         btn_consultar.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_consultar.setText("Consultar");
+        btn_consultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_consultarActionPerformed(evt);
+            }
+        });
 
         btn_vender.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_vender.setText("Vender");
@@ -116,6 +126,20 @@ Agregar agre=new Agregar();
         agre.setTitle("Agregar");
         agre.setVisible(true);
     }//GEN-LAST:event_btn_agregarActionPerformed
+
+    private void btn_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_modificarActionPerformed
+Modificar modi=new Modificar();
+        modi.setLocationRelativeTo(null);
+        modi.setTitle("Modificar");
+        modi.setVisible(true);
+    }//GEN-LAST:event_btn_modificarActionPerformed
+
+    private void btn_consultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_consultarActionPerformed
+Consultar consu = new Consultar();
+        consu.setLocationRelativeTo(null);
+        consu.setTitle("Consultar");
+        consu.setVisible(true);
+    }//GEN-LAST:event_btn_consultarActionPerformed
 
     /**
      * @param args the command line arguments
