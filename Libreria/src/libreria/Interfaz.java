@@ -61,9 +61,19 @@ public class Interfaz extends javax.swing.JFrame {
 
         btn_vender.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_vender.setText("Vender");
+        btn_vender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_venderActionPerformed(evt);
+            }
+        });
 
         btn_salir.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_salir.setText("Salir");
+        btn_salir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_salirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -125,6 +135,7 @@ Agregar agre=new Agregar();
         agre.setLocationRelativeTo(null);
         agre.setTitle("Agregar");
         agre.setVisible(true);
+        dispose();
     }//GEN-LAST:event_btn_agregarActionPerformed
 
     private void btn_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_modificarActionPerformed
@@ -132,6 +143,7 @@ Modificar modi=new Modificar();
         modi.setLocationRelativeTo(null);
         modi.setTitle("Modificar");
         modi.setVisible(true);
+        dispose();
     }//GEN-LAST:event_btn_modificarActionPerformed
 
     private void btn_consultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_consultarActionPerformed
@@ -139,7 +151,21 @@ Consultar consu = new Consultar();
         consu.setLocationRelativeTo(null);
         consu.setTitle("Consultar");
         consu.setVisible(true);
+        dispose();
     }//GEN-LAST:event_btn_consultarActionPerformed
+
+    private void btn_venderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_venderActionPerformed
+     
+Vender vend = new Vender();
+        vend.setLocationRelativeTo(null);
+        vend.setTitle("Vender");
+        vend.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_btn_venderActionPerformed
+
+    private void btn_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salirActionPerformed
+      System.exit(0);
+    }//GEN-LAST:event_btn_salirActionPerformed
 
     /**
      * @param args the command line arguments
