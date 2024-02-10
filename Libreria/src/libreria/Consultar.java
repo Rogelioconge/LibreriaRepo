@@ -33,6 +33,7 @@ public class Consultar extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), "Consultar", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Helvetica Neue", 0, 24))); // NOI18N
 
+        tbl_consulta.setFont(new java.awt.Font("Helvetica Neue", 0, 18)); // NOI18N
         tbl_consulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -89,6 +90,7 @@ public class Consultar extends javax.swing.JFrame {
         inter.setLocationRelativeTo(null);
         inter.setTitle("Menu");
         inter.setVisible(true);
+        
     }//GEN-LAST:event_btn_salirActionPerformed
 
     /**

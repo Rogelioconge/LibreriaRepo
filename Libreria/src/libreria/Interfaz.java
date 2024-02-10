@@ -4,17 +4,20 @@
  */
 package libreria;
 
+import com.UBAM.ConnectionMySQL.ConnectionMySQL;
+
 /**
  *
  * @author rogerconge
  */
 public class Interfaz extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Interfaz
-     */
+    private ConnectionMySQL conexion;
     public Interfaz() {
         initComponents();
+        
+        
+        conexion = new ConnectionMySQL();
     }
 
     /**
@@ -135,6 +138,7 @@ Agregar agre=new Agregar();
         agre.setLocationRelativeTo(null);
         agre.setTitle("Agregar");
         agre.setVisible(true);
+        conexion.abrirConexion();
         dispose();
     }//GEN-LAST:event_btn_agregarActionPerformed
 
@@ -143,6 +147,7 @@ Modificar modi=new Modificar();
         modi.setLocationRelativeTo(null);
         modi.setTitle("Modificar");
         modi.setVisible(true);
+        conexion.abrirConexion();
         dispose();
     }//GEN-LAST:event_btn_modificarActionPerformed
 
@@ -151,6 +156,7 @@ Consultar consu = new Consultar();
         consu.setLocationRelativeTo(null);
         consu.setTitle("Consultar");
         consu.setVisible(true);
+        conexion.abrirConexion();
         dispose();
     }//GEN-LAST:event_btn_consultarActionPerformed
 
@@ -160,11 +166,13 @@ Vender vend = new Vender();
         vend.setLocationRelativeTo(null);
         vend.setTitle("Vender");
         vend.setVisible(true);
+        conexion.abrirConexion();
         dispose();
     }//GEN-LAST:event_btn_venderActionPerformed
 
     private void btn_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salirActionPerformed
       System.exit(0);
+      conexion.cerrarConexion();
     }//GEN-LAST:event_btn_salirActionPerformed
 
     /**
