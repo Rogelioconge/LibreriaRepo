@@ -7,7 +7,7 @@ import java.sql.*;
 
 /**
  *
- * @author rogel
+ * @author rogerconge
  */
 public class ConnectionMySQL {
    Connection conexion = null;

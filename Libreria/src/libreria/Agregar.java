@@ -3,6 +3,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package libreria;
+import com.UBAM.Combos.Editoriales;
+import com.UBAM.Combos.Generos;
+import com.UBAM.Combos.Idiomas;
+import com.UBAM.Combos.RellenarCombos;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,55 +18,28 @@ import javax.swing.JOptionPane;
 
 import com.UBAM.ConnectionMySQL.ConnectionMySQL;
 import com.mysql.jdbc.Connection;
+import javax.swing.DefaultComboBoxModel;
 /**
  *
  * @author rogerconge
  */
 public class Agregar extends javax.swing.JFrame {
 
-    private ConnectionMySQL conexion;
-
-
-    public Agregar() {
+    ConnectionMySQL conexion = new ConnectionMySQL();
+    java.sql.Connection cn = conexion.abrirConexion();
+    
+    
+    public Agregar(){
         initComponents();
-         conexion = new ConnectionMySQL();
-         conexion.abrirConexion();
- 
+        conexion.abrirConexion();
+
+        cargarCombo(combo_idioma);
+                cargarCombo1(combo_genero);
+                cargarCombo2(combo_editorial);
 
     }
-   public void cargarIdiomas() {
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
 
-    try {
-        con = (Connection) conexion.abrirConexion(); // Asigna la conexión obtenida al objeto con
-        String sql = "SELECT Idioma_Idioma FROM tbl_cat_idioma";
-        ps = con.prepareStatement(sql);
-        rs = ps.executeQuery();
-
-        while (rs.next()) {
-            combo_idioma.addItem(rs.getString(1));
-        }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Error al cargar los idiomas: " + e.getMessage());
-    } finally {
-        try {
-            if (rs != null) {
-                rs.close();
-            }
-            if (ps != null) {
-                ps.close();
-            }
-            if (con != null) {
-                conexion.cerrarConexion();
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al cerrar la conexión: " + e.getMessage());
-        }
-    }
-}
-
+    
  
     
     
@@ -94,14 +71,17 @@ public class Agregar extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), "Agregar Libro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Helvetica Neue", 0, 36))); // NOI18N
 
-        combo_editorial.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         combo_editorial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 combo_editorialActionPerformed(evt);
             }
         });
 
-        combo_genero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        combo_genero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_generoActionPerformed(evt);
+            }
+        });
 
         combo_idioma.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,6 +103,11 @@ public class Agregar extends javax.swing.JFrame {
 
         btn_agregar.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_agregar.setText("Agregar");
+        btn_agregar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_agregarActionPerformed(evt);
+            }
+        });
 
         btn_salir.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_salir.setText("Regresar");
@@ -209,7 +194,6 @@ public class Agregar extends javax.swing.JFrame {
 
     private void btn_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_salirActionPerformed
         dispose();
-        conexion.cerrarConexion();
         Interfaz inter = new Interfaz();
         inter.setLocationRelativeTo(null);
         inter.setTitle("Menu");
@@ -221,8 +205,65 @@ public class Agregar extends javax.swing.JFrame {
     }//GEN-LAST:event_combo_editorialActionPerformed
 
     private void combo_idiomaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_idiomaActionPerformed
-        cargarIdiomas();
+
     }//GEN-LAST:event_combo_idiomaActionPerformed
+
+    private void btn_agregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregarActionPerformed
+        String nombreLibro = txt_nomlibro.getText();
+    String precioLibroStr = txt_coslibro.getText();
+    String existenciasStr = txt_canticopias.getText();
+    String activo = "1"; // Establece el valor por defecto para el campo activo
+
+    if (nombreLibro.isEmpty() || precioLibroStr.isEmpty() || existenciasStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Por favor complete todos los campos");
+        return;
+    }
+
+    try {
+        int generoId = combo_genero.getSelectedIndex() + 1; // Index + 1 porque los IDs en la base de datos comienzan desde 1
+        int editorialId = combo_editorial.getSelectedIndex() + 1; // Index + 1 porque los IDs en la base de datos comienzan desde 1
+        int idiomaId = combo_idioma.getSelectedIndex() + 1; // Index + 1 porque los IDs en la base de datos comienzan desde 1
+        int precioLibro = Integer.parseInt(precioLibroStr);
+        int existencias = Integer.parseInt(existenciasStr);
+
+        // Llamar al procedimiento almacenado para insertar el libro
+        Connection con = null;
+        CallableStatement cs = null;
+
+        try {
+            cn = conexion.abrirConexion();
+            cs = cn.prepareCall("{call InsertarLibro(?, ?, ?, ?, ?, ?, ?)}");
+            cs.setString(1, nombreLibro);
+            cs.setInt(2, generoId);
+            cs.setInt(3, editorialId);
+            cs.setInt(4, idiomaId);
+            cs.setInt(5, precioLibro);
+            cs.setInt(6, existencias);
+            cs.setString(7, activo);
+            cs.execute();
+            JOptionPane.showMessageDialog(this, "Libro insertado exitosamente");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al insertar el libro: " + e.getMessage());
+        } finally {
+            try {
+                if (cs != null) {
+                    cs.close();
+                }
+                if (cn != null) {
+                    conexion.cerrarConexion();
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor ingrese un número válido para el precio y las existencias");
+    }
+    }//GEN-LAST:event_btn_agregarActionPerformed
+
+    private void combo_generoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_generoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_combo_generoActionPerformed
 
     
 
@@ -280,4 +321,67 @@ public class Agregar extends javax.swing.JFrame {
     private javax.swing.JTextField txt_coslibro;
     private javax.swing.JTextField txt_nomlibro;
     // End of variables declaration//GEN-END:variables
+
+    private void cargarCombo(JComboBox c) {
+        DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        c.setModel (combo);
+        RellenarCombos lc = new RellenarCombos();
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs=st.executeQuery("SELECT Idioma_Idioma FROM tbl_cat_idioma");
+            while (rs.next()){
+               Idiomas ido = new Idiomas();
+               ido.setNombre_idioma(rs.getString(1));
+               lc.Agregaridiomas(ido);
+               combo.addElement(ido.getNombre_idioma());
+                System.out.println("Exito...");
+            }
+        }catch (Exception e){
+            System.out.println("ERROR, FALLO EL COMBO"+e);
+            
+        }
+    }
+    
+       private void cargarCombo1(JComboBox c) {
+        DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        c.setModel (combo);
+        RellenarCombos lc = new RellenarCombos();
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs=st.executeQuery("SELECT Genero_Genero FROM tbl_cat_genero");
+            while (rs.next()){
+               Generos ido = new Generos();
+               ido.setNombre_genero(rs.getString(1));
+               lc.Agregargeneros(ido);
+               combo.addElement(ido.getNombre_genero());
+                System.out.println("Exito...");
+            }
+        }catch (Exception e){
+            System.out.println("ERROR, FALLO EL COMBO"+e);
+            
+        }
+    }
+       
+       
+           private void cargarCombo2(JComboBox c) {
+        DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        c.setModel (combo);
+        RellenarCombos lc = new RellenarCombos();
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs=st.executeQuery("SELECT Editorial_Editorial FROM tbl_cat_editorial");
+            while (rs.next()){
+               Editoriales ido = new Editoriales();
+               ido.setNombre_editorial(rs.getString(1));
+               lc.Agregareditorial(ido);
+               combo.addElement(ido.getNombre_editorial());
+                System.out.println("Exito...");
+            }
+        }catch (Exception e){
+            System.out.println("ERROR, FALLO EL COMBO"+e);
+            
+        }
+    }
+       
+    
 }
