@@ -4,17 +4,34 @@
  */
 package libreria;
 
+import com.UBAM.Combos.Generos;
+import com.UBAM.Combos.RellenarCombos;
+import com.UBAM.ConnectionMySQL.ConnectionMySQL;
+import java.sql.Statement;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rogerconge
  */
 public class Modificar extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Modificar
-     */
+    ConnectionMySQL conexion = new ConnectionMySQL();
+    java.sql.Connection cn = conexion.abrirConexion();
+    
     public Modificar() {
         initComponents();
+        
+                conexion.abrirConexion();
+
+                cargarCombo1(combo_genero);
+        
     }
 
     /**
@@ -48,11 +65,25 @@ public class Modificar extends javax.swing.JFrame {
         });
 
         txt_nomlibro.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        txt_nomlibro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_nomlibroActionPerformed(evt);
+            }
+        });
 
         combo_genero.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
-        combo_genero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        combo_genero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_generoActionPerformed(evt);
+            }
+        });
 
         txt_costo.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        txt_costo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_costoActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         jLabel1.setText("ID del Libro");
@@ -68,6 +99,11 @@ public class Modificar extends javax.swing.JFrame {
 
         btn_modificar.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_modificar.setText("Modificar");
+        btn_modificar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_modificarActionPerformed(evt);
+            }
+        });
 
         btn_salir.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_salir.setText("Regresar");
@@ -154,6 +190,52 @@ public class Modificar extends javax.swing.JFrame {
         inter.setVisible(true);
     }//GEN-LAST:event_btn_salirActionPerformed
 
+    private void txt_nomlibroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_nomlibroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_nomlibroActionPerformed
+
+    private void combo_generoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_generoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_combo_generoActionPerformed
+
+    private void txt_costoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_costoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_costoActionPerformed
+
+    private void btn_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_modificarActionPerformed
+     try {
+         cn = conexion.abrirConexion();
+        // Obtener los valores de los campos de texto y del combo box
+        int idLibro = Integer.parseInt(txt_idlibro.getText());
+        String nombreLibro = txt_nomlibro.getText();
+        int generoId = combo_genero.getSelectedIndex() + 1; // Se suma 1 porque los índices de JComboBox comienzan desde 0
+        int costo = Integer.parseInt(txt_costo.getText());
+        
+        // Llamar al procedimiento almacenado
+        CallableStatement cs = cn.prepareCall("{call ModificarLibro(?, ?, ?, ?)}");
+        cs.setInt(1, idLibro);
+        cs.setString(2, nombreLibro);
+        cs.setInt(3, generoId);
+        cs.setInt(4, costo);
+        
+        // Ejecutar el procedimiento almacenado
+        cs.execute();
+        
+        // Cerrar el CallableStatement
+        cs.close();
+        
+        // Mostrar un mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Libro modificado correctamente.");
+        
+    } catch (SQLException e) {
+        // Manejar cualquier excepción de SQL
+        JOptionPane.showMessageDialog(this, "Error al modificar el libro: " + e.getMessage());
+    } catch (NumberFormatException e) {
+        // Manejar una excepción si los campos de texto no contienen valores numéricos
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos para el ID y el costo.");
+    }
+    }//GEN-LAST:event_btn_modificarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -202,4 +284,28 @@ public class Modificar extends javax.swing.JFrame {
     private javax.swing.JTextField txt_idlibro;
     private javax.swing.JTextField txt_nomlibro;
     // End of variables declaration//GEN-END:variables
+
+
+       private void cargarCombo1(JComboBox c) {
+        DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        c.setModel (combo);
+        RellenarCombos lc = new RellenarCombos();
+        try{
+            Statement st = cn.createStatement();
+            ResultSet rs=st.executeQuery("SELECT Genero_Genero FROM tbl_cat_genero");
+            while (rs.next()){
+               Generos ido = new Generos();
+               ido.setNombre_genero(rs.getString(1));
+               lc.Agregargeneros(ido);
+               combo.addElement(ido.getNombre_genero());
+                System.out.println("Exito...");
+            }
+        }catch (Exception e){
+            System.out.println("ERROR, FALLO EL COMBO"+e);
+            
+        }
+    }
+
+
+
 }
