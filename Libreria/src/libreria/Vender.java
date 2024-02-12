@@ -3,18 +3,29 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package libreria;
-
+import com.UBAM.Combos.Generos;
+import com.UBAM.Combos.RellenarCombos;
+import com.UBAM.ConnectionMySQL.ConnectionMySQL;
+import java.sql.Statement;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 /**
  *
  * @author rogerconge
  */
 public class Vender extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Vender
-     */
+    ConnectionMySQL conexion = new ConnectionMySQL();
+    java.sql.Connection cn = conexion.abrirConexion();
+    
     public Vender() {
         initComponents();
+        conexion.abrirConexion();
     }
 
     /**
@@ -40,14 +51,29 @@ public class Vender extends javax.swing.JFrame {
         jLabel1.setText("ID del libro");
 
         txt_idlibro.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        txt_idlibro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_idlibroActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         jLabel2.setText("Cantidad");
 
         txt_cantidad.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
+        txt_cantidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_cantidadActionPerformed(evt);
+            }
+        });
 
         btn_vender.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_vender.setText("Vender");
+        btn_vender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_venderActionPerformed(evt);
+            }
+        });
 
         btn_regresar.setFont(new java.awt.Font("Helvetica Neue", 0, 24)); // NOI18N
         btn_regresar.setText("Regresar");
@@ -117,6 +143,46 @@ public class Vender extends javax.swing.JFrame {
         inter.setTitle("Menu");
         inter.setVisible(true);
     }//GEN-LAST:event_btn_regresarActionPerformed
+
+    private void txt_idlibroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_idlibroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_idlibroActionPerformed
+
+    private void txt_cantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_cantidadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_cantidadActionPerformed
+
+    private void btn_venderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_venderActionPerformed
+// Obtener el ID del libro y la cantidad vendida desde los campos de texto
+    int libroId = Integer.parseInt(txt_idlibro.getText());
+    int cantidadVendida = Integer.parseInt(txt_cantidad.getText());
+    
+    try {
+        // Establecer conexión a la base de datos
+         cn = conexion.abrirConexion();
+        
+        // Preparar la llamada al procedimiento almacenado
+        CallableStatement cs = cn.prepareCall("{call VentaLibro(?, ?)}");
+        
+        // Establecer los valores de los parámetros del procedimiento
+        cs.setInt(1, libroId);
+        cs.setInt(2, cantidadVendida);
+        
+        // Ejecutar el procedimiento almacenado
+        cs.execute();
+        
+        // Cerrar la conexión y liberar recursos
+        cs.close();
+        conexion.cerrarConexion();
+        
+        // Mostrar un mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Venta realizada exitosamente.");
+        
+    } catch (SQLException e) {
+        // Mostrar un mensaje de error en caso de excepción
+        JOptionPane.showMessageDialog(this, "Error al realizar la venta: " + e.getMessage());
+    }
+    }//GEN-LAST:event_btn_venderActionPerformed
 
     /**
      * @param args the command line arguments
